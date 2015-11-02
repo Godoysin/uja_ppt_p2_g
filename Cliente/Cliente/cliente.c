@@ -98,25 +98,49 @@ int main(int *argc, char *argv[])
 
 					case S_HELO:
 						//Establece la conexion de aplicacion 
-						printf("HELO\r\n");
+						printf("%s%s",HE,CRLF);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",HE,CRLF);
 						break;
 
 					case S_MAIL:
-						printf("MAIL FROM:\r\n");
+						printf("%s%s",MA,CRLF);
 						printf("CLIENTE> Introduzca su direccion de correo electronico:\r\n");
 						gets(input);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",MA,input,CRLF);
 						break;
 
 					case S_RCPT:
-						printf("RCPT\r\n");
-						printf("CLIENTE> Introduce el correo electronico de destino:\r\n");
+						printf("%s%s",RE,CRLF);
+						printf("CLIENTE> Introduzca el correo electronico del destinatario:\r\n");
 						gets(input);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",RE,input,CRLF);
 						break;
 
 					case S_DATA:
+						printf("%s%s",DA,CRLF);
+						sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",DA,CRLF);
+						break;
+
+					case S_SEND: //Mail queued for delivery -> Mail en cola para entrega
+						printf("SEND%s",CRLF);
+						printf("CLIENTE> Introduzca el contenido de su correo electronico\r\n");
+						printf("CLIENTE> Escriba y pulse Enter para saltar de línea\r\n");
+						printf("CLIENTE> Para terminar el mensaje pulse Enter\r\n");
+						do{
+							gets(input);
+							if(strcmp(input,"") == 0){
+								sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",PNT,CRLF);
+								printf("1%s",CRLF);
+							}
+							else{
+								sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",input,CRLF);
+								printf("2%s",CRLF);
+							}
+						}while(strcmp(input,"") == 1);	//Si input=null sale.
+						break;
+
+					case S_QUIT:
+						printf("%s%s",QU,CRLF);
 						break;
 				
 					}
@@ -127,50 +151,44 @@ int main(int *argc, char *argv[])
 						enviados=send(sockfd,buffer_out,(int)strlen(buffer_out),0); //Send- envía un mensaje
 						if(enviados<=0)
 						{
-							if(enviados<0)
-							{
+							if(enviados<0){
 								printf("CLIENTE> Error en la recepcion de datos\r\n");
 								estado=S_QUIT;
 							}
-							else
-							{
-							printf("CLIENTE> Conexion con el servidor cerrada\r\n");
-							estado=S_QUIT;
+							else{
+								printf("CLIENTE> Conexion con el servidor cerrada\r\n");
+								estado=S_QUIT;
 							}
+						}
 					}
-					}
-					
-						
 
 					//Recibo
 					recibidos=recv(sockfd,buffer_in,512,0); //Recv- Recibir un mensaje
 					if(recibidos<=0)
 					{
 						DWORD error=GetLastError();
-						if(recibidos<0)
-						{
+						if(recibidos<0){
 							printf("CLIENTE> Error %d en la recepcion de datos\r\n",error);
 							estado=S_QUIT;
 						}
-						else
-						{
+						else{
 							printf("CLIENTE> Conexion con el servidor cerrada\r\n");
 							estado=S_QUIT;
-						
-					
 						}
 					}
-					else
-					{
+					else{
 						buffer_in[recibidos]=0x00;
 						printf(buffer_in);
 						//TODO Hay que tocar cosas.
 						//De primeras envía un 220 a modo de OK.
 						//De segundas envía un 250 a modo de OK.
-						if(strncmp(buffer_in,OK,1)==0){
+						//Al final cojo el 2 como codigo de aceptacion.
+						if(strncmp(buffer_in,OK,1)==0 && estado != S_SEND){
 							//estado!=S_DATA &&
 							estado++;
-							printf("Se ha tragado la tonteria esta\r\n");
+						}
+						if(strncmp(buffer_in,OK2,1)==0 && estado != S_SEND){
+							estado++;
 						}
 					}
 
