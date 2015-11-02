@@ -117,9 +117,6 @@ int main(int *argc, char *argv[])
 						break;
 
 					case S_DATA:
-						printf("DATA\r\n");
-						printf("CLIENTE> algo\r\n");
-						sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",DA,CRLF);
 						break;
 				
 					}
