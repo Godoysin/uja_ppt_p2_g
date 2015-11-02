@@ -27,8 +27,9 @@
 #define S_RCPT 3
 #define S_DATA 4
 #define S_SEND 5
-#define S_QUIT 6
-#define S_EXIT 7
+#define S_CHOO 6
+#define S_QUIT 7
+#define S_EXIT 8
 
 //PUERTO DEL SERVICIO
 #define TCP_SERVICE_PORT	25
