@@ -128,6 +128,7 @@ int main(int *argc, char *argv[])
 						//Asunto
 						//Destinatario
 						//Remitente
+						//strcat
 					case S_SEND: //Mail queued for delivery -> Mail en cola para entrega
 						printf("SEND%s",CRLF);
 						printf("CLIENTE> Introduzca el contenido de su correo electronico%s",CRLF);
@@ -149,11 +150,11 @@ int main(int *argc, char *argv[])
 							printf("CLIENTE> Elija enviar un nuevo correo electronico o salir de la aplicacion%s",CRLF);
 							printf("CLIENTE> Nuevo Correo C, Salir S%s",CRLF);
 							gets(input);
-							if(strcmp(input,"C") == 0){//Nuevo correo
+							if(strcmp(input,"C") == 0 || strcmp(input,"c") == 0){//Nuevo correo
 								estado = S_MAIL;
 								bucle = TRUE;
 							}
-							else if(strcmp(input,"S") == 0){//Salir
+							else if(strcmp(input,"S") == 0 || strcmp(input,"s") == 0){//Salir
 								estado = S_QUIT;
 								bucle = TRUE;
 							}
@@ -162,10 +163,6 @@ int main(int *argc, char *argv[])
 								bucle = FALSE;
 							}
 						}while(bucle == FALSE);
-						break;
-
-					case S_QUIT:
-						printf("%s%s",QU,CRLF);
 						break;
 				
 					}
