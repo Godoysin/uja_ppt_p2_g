@@ -25,7 +25,8 @@ int main(int *argc, char *argv[])
 {
 	SOCKET sockfd;
 	struct sockaddr_in server_in;
-	char buffer_in[1024], buffer_out[1024], input[1024];
+	char buffer_in[1024], buffer_out[1024], input[1024], sender[1024], mensaje[1024];
+	char receiver[1024], buffer[1024];
 	int recibidos=0,enviados=0;
 	int estado=S_WAIT;
 	char option;
@@ -109,6 +110,7 @@ int main(int *argc, char *argv[])
 						printf("CLIENTE> Introduzca su direccion de correo electronico:%s",CRLF);
 						gets(input);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",MA,input,CRLF);
+						strcpy(sender,input);
 						break;
 
 					case S_RCPT:
@@ -116,6 +118,7 @@ int main(int *argc, char *argv[])
 						printf("CLIENTE> Introduzca el correo electronico del destinatario:%s",CRLF);
 						gets(input);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",RE,input,CRLF);
+						strcpy(receiver,input);
 						break;
 
 					case S_DATA:
@@ -125,24 +128,28 @@ int main(int *argc, char *argv[])
 
 						//TODO enviar las siguientes cabeceras
 						//Fecha origen
-						//Asunto
-						//Destinatario
-						//Remitente
-						//strcat
 					case S_SEND: //Mail queued for delivery -> Mail en cola para entrega
 						printf("SEND%s",CRLF);
+						//Para
+						sprintf(buffer,"To: %s%s",receiver,CRLF);
+						strcpy(buffer_out,buffer);
+						//De:
+						sprintf(buffer,"From: %s%s",sender,CRLF);
+						strcat(buffer_out,buffer);
+						//Asunto
+						printf("Introduce el asunto del correo electronico%s",CRLF);
+						gets(input);
+						sprintf(buffer,"Subject: %s%s%s",input,CRLF,CRLF);
+						strcat(buffer_out,buffer);
 						printf("CLIENTE> Introduzca el contenido de su correo electronico%s",CRLF);
-						printf("CLIENTE> Escriba y pulse Enter para saltar de línea%s",CRLF);
-						printf("CLIENTE> Para terminar el mensaje pulse Enter%s",CRLF);
+						printf("CLIENTE> Para terminar el mensaje introduzaca solo un punto%s",CRLF);
 						do{
 							gets(input);
-							if(strcmp(input,"") == 0){
-								sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",PNT,CRLF);
-							}
-							else{
-								sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",input,CRLF);
-							}
-						}while(strcmp(input,"") == 1);	//Si input=null sale.
+							strcpy(buffer,input);
+							strcat(buffer,CRLF);
+							strcat(buffer_out,buffer);
+						}while(strcmp(input,".") == 1);	//Si input=. sale.
+						printf(buffer_out);
 						break;
 
 					case S_CHOO:
