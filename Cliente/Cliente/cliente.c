@@ -101,12 +101,10 @@ int main(int *argc, char *argv[])
 
 					case S_HELO:
 						//Establece la conexion de aplicacion 
-						printf("%s%s",HE,CRLF);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",HE,CRLF);
 						break;
 
 					case S_MAIL:
-						printf("%s%s",MA,CRLF);
 						printf("CLIENTE> Introduzca su direccion de correo electronico:%s",CRLF);
 						gets(input);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",MA,input,CRLF);
@@ -114,7 +112,6 @@ int main(int *argc, char *argv[])
 						break;
 
 					case S_RCPT:
-						printf("%s%s",RE,CRLF);
 						printf("CLIENTE> Introduzca el correo electronico del destinatario:%s",CRLF);
 						gets(input);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",RE,input,CRLF);
@@ -122,7 +119,6 @@ int main(int *argc, char *argv[])
 						break;
 
 					case S_DATA:
-						printf("%s%s",DA,CRLF);
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",DA,CRLF);
 						break;
 
@@ -148,8 +144,7 @@ int main(int *argc, char *argv[])
 							strcpy(buffer,input);
 							strcat(buffer,CRLF);
 							strcat(buffer_out,buffer);
-						}while(strcmp(input,".") == 1);	//Si input=. sale.
-						printf(buffer_out);
+						}while(strcmp(input,PNT) == 1);	//Si input=. sale.
 						break;
 
 					case S_CHOO:
@@ -170,11 +165,15 @@ int main(int *argc, char *argv[])
 								bucle = FALSE;
 							}
 						}while(bucle == FALSE);
+						continue;
+
+					case S_QUIT:
+						sprintf(buffer_out,"%s %s",QU,CRLF);
 						break;
 				
 					}
 					//Envio
-					if(estado!=S_WAIT && estado!=S_CHOO){
+					if(estado!=S_WAIT){
 						//Ejercicio: Comprobar el estado de envio
 						enviados=send(sockfd,buffer_out,(int)strlen(buffer_out),0); //Send- envía un mensaje
 						if(enviados<=0)
