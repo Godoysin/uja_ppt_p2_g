@@ -74,11 +74,11 @@ int main(int *argc, char *argv[])
 			//printf("CLIENTE> Introduzca la IP destino (pulsar enter para IP por defecto): ");
 			//gets(ipdest);
 
+			//Resolución de direcciones IP a partir de dominios.
 			printf("Introduzca la direccion IP o el dominio destino: ");
 			gets(ipdest);
 			ipdestl=inet_addr(ipdest);
 			if(ipdestl==INADDR_NONE){
-				printf("entrar");
 				//La dirección introducida por teclado no es correcta o
 				//corresponde con un dominio.
 				struct hostent *host;
