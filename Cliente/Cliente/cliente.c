@@ -17,6 +17,7 @@ Autor: Juan Carlos Cuevas Martínez
 #include <winsock.h>
 #include <time.h>
 #include <conio.h>
+#include <windows.h>
 
 #include "protocol.h"
 
@@ -30,6 +31,8 @@ int main(int *argc, char *argv[])
 	int recibidos=0,enviados=0;
 	int estado=S_WAIT;
 	char option;
+	int fecha;
+	char fech[1024];
 
 	boolean bucle;
 
@@ -125,7 +128,10 @@ int main(int *argc, char *argv[])
 						//TODO enviar las siguientes cabeceras
 						//Fecha origen
 					case S_SEND: //Mail queued for delivery -> Mail en cola para entrega
-						printf("SEND%s",CRLF);
+						//Fecha
+						fecha = getTimeZone();
+						sprintf(fech,"%d",fecha);
+						sprintf(buffer,"date: %s%s",fech,CRLF);
 						//Para
 						sprintf(buffer,"To: %s%s",receiver,CRLF);
 						strcpy(buffer_out,buffer);
@@ -137,6 +143,7 @@ int main(int *argc, char *argv[])
 						gets(input);
 						sprintf(buffer,"Subject: %s%s%s",input,CRLF,CRLF);
 						strcat(buffer_out,buffer);
+						//Mensaje
 						printf("CLIENTE> Introduzca el contenido de su correo electronico%s",CRLF);
 						printf("CLIENTE> Para terminar el mensaje introduzaca solo un punto%s",CRLF);
 						do{
@@ -215,7 +222,11 @@ int main(int *argc, char *argv[])
 						}
 						if(strncmp(buffer_in,OK2,1)==0 && estado == S_DATA){
 							estado++;
-						}
+						}//Control de errores
+						//if(strncmp(buffer_in,ER2,1)==0){
+							//printf("Se ha producido un error");
+							//estado = S_QUIT;
+						//}
 					}
 
 				}while(estado != S_QUIT);
@@ -242,3 +253,18 @@ int main(int *argc, char *argv[])
 
 }
 //Escribes quit y no cierra.
+
+int getTimeZone(){
+   TIME_ZONE_INFORMATION tziOld;
+   DWORD dwRet;
+   dwRet = GetTimeZoneInformation(&tziOld);
+   
+   if(dwRet == TIME_ZONE_ID_STANDARD || dwRet == TIME_ZONE_ID_UNKNOWN)    
+		tziOld.StandardBias/60;
+   else if( dwRet == TIME_ZONE_ID_DAYLIGHT )
+		return tziOld.DaylightBias/60;
+   else{
+      printf("GTZI failed (%d)\n", GetLastError());
+      return 0;
+   }
+}

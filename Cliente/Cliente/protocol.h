@@ -15,6 +15,7 @@
 #define OK		"2"
 #define OK2		"3"
 #define ER		"ERROR"
+#define ER2		"5"
 
 //FIN DE RESPUESTA
 #define CRLF "\r\n"
