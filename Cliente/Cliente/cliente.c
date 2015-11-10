@@ -42,6 +42,8 @@ int main(int *argc, char *argv[])
 
     char ipdest[16];
 	char default_ip[16]="127.0.0.1";
+	unsigned long ipdestl;
+	struct in_addr address;
 	
 	//Inicialización Windows sockets
 	wVersionRequested=MAKEWORD(1,1);
@@ -69,12 +71,27 @@ int main(int *argc, char *argv[])
 			printf("CLIENTE> SOCKET CREADO CORRECTAMENTE\r\n");
 
 		
-			printf("CLIENTE> Introduzca la IP destino (pulsar enter para IP por defecto): ");
+			//printf("CLIENTE> Introduzca la IP destino (pulsar enter para IP por defecto): ");
+			//gets(ipdest);
+
+			printf("Introduzca la direccion IP o el dominio destino: ");
 			gets(ipdest);
+			ipdestl=inet_addr(ipdest);
+			if(ipdestl==INADDR_NONE){
+				printf("entrar");
+				//La dirección introducida por teclado no es correcta o
+				//corresponde con un dominio.
+				struct hostent *host;
+				host=gethostbyname(ipdest);
+				if(host!=NULL){
+					memcpy(&address,host->h_addr_list[0],4);
+					printf("\nDireccion %s\n",inet_ntoa(address));
+					strcpy(ipdest,inet_ntoa(address));
+				}
+			}
 
 			if(strcmp(ipdest,"")==0) //Si no introduces una IP, coge una por defecto
 				strcpy(ipdest,default_ip);
-
 
 			server_in.sin_family=AF_INET;
 			server_in.sin_port=htons(TCP_SERVICE_PORT);
